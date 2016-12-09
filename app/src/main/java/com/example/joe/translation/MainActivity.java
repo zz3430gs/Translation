@@ -25,7 +25,6 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Translate Activity";
-    //private static final String URLS = "https://translation.googleapis.com/language/translate/v2?parameters";
     Button mbutton;
     EditText mEditText;
     TextView mTextView;
@@ -39,11 +38,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Create the key and get the key data
         key = keys.getKeyFromRawResource(this, R.raw.keys);
+
+        //Create references to the individual widgets from the layout resources
         mProgress = (ProgressBar)findViewById(R.id.progress);
         mEditText = (EditText)findViewById(R.id.text_to_translate);
         mTargetLang = (TextView) findViewById(R.id.translation_lang);
         mTextView = (TextView)findViewById(R.id.textTranslation);
+
 
         if (key != null){
             getJapaneseTranslation();
@@ -61,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void getJapaneseTranslation(){
+
+        //For now we get the translation from japanese base on the url
+        //TODO: For later maybe get the user to be able to chooce what they want to translate to
         String baseTempURL = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyBKGHm9xQLBfJJOtg5_fHzFf2eu2oFjZjw&source=en&target=ja&q=";
         String edtitext = mEditText.getText().toString();
         String url = String.format("%1s%2s", baseTempURL, edtitext);
@@ -119,10 +125,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         protected void onPostExecute(JSONObject json) {
+            //fetching the data from the api
             if (json != null) {
 
                 mProgress.setVisibility(ProgressBar.INVISIBLE);
 
+                //If there is an error fetching data then get a error message
                 try {
                     if (json.getJSONObject("data").has("error")) {
                         Log.e(TAG, "Error in response from Google Translate" + json.getJSONObject("data")
@@ -130,12 +138,11 @@ public class MainActivity extends AppCompatActivity {
                                 .getString("description"));
                     }
 
-
+                    //If there is a translation then it will change the textview and show the translated word
                     String translateword = json.getJSONObject("data").getString("translations");
                     String textWord = mEditText.getText().toString();
                     mTextView.setText(textWord + " translated to Japanese is" + translateword);
-//                    String e = textWord + " translated to Japanese is" + translateword;
-//                    System.out.println(e);
+
                 } catch (JSONException je) {
                     Log.e(TAG, "JSON parsing error", je);
                 }
