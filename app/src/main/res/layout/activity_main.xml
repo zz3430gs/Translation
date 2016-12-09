@@ -8,25 +8,33 @@
     android:gravity="center"
     tools:context="com.example.joe.translation.MainActivity">
     <EditText
-        android:id="@+id/search_box"
+        android:id="@+id/text_to_translate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="to"/>
+        android:text="to:"/>
+    <TextView
+        android:id="@+id/translation_lang"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Japanese"
+        android:gravity="center"/>
     <Button
         android:id="@+id/search_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Search"/>
-    <EditText
-        android:id="@+id/translationTo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:text="Translate"/>
     <TextView
         android:id="@+id/textTranslation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Translation goes here..."/>
+        android:gravity="center"
+        android:text="Translating..."/>
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:visibility="invisible"/>
 </LinearLayout>
