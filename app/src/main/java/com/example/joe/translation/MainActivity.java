@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         mTargetLang = (TextView) findViewById(R.id.translation_lang);
         mTextView = (TextView)findViewById(R.id.textTranslation);
 
-
+        //If there is nothing in the key file, return error message
         if (key != null){
             getJapaneseTranslation();
         }else {
