@@ -38,16 +38,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Create the key and get the key data
+        //Create the keys and get the keys data
         key = keys.getKeyFromRawResource(this, R.raw.keys);
 
         //Create references to the individual widgets from the layout resources
         mProgress = (ProgressBar)findViewById(R.id.progress);
         mEditText = (EditText)findViewById(R.id.text_to_translate);
+//        mEditText2 = (EditText)findViewById(R.id.translation_lang);
         mTargetLang = (TextView) findViewById(R.id.translation_lang);
         mTextView = (TextView)findViewById(R.id.textTranslation);
 
-        //If there is nothing in the key file, return error message
+        //If there is nothing in the keys file, return error message
         if (key != null){
             getJapaneseTranslation();
         }else {
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 getJapaneseTranslation();
+
             }
         });
 
@@ -67,18 +69,27 @@ public class MainActivity extends AppCompatActivity {
 
         //For now we get the translation from japanese base on the url
         //TODO: For later maybe get the user to be able to chooce what they want to translate to
-        String baseTempURL = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyBKGHm9xQLBfJJOtg5_fHzFf2eu2oFjZjw&source=en&target=ja&q=";
+        String baseTempURL = "https://translation.googleapis.com/language/translate/v2?key=";
+        String baseUrl2 = "&source=en&target=ja&q=";
         String edtitext = mEditText.getText().toString();
-        String url = String.format("%1s%2s", baseTempURL, edtitext);
+        String url = String.format(baseTempURL + key + baseUrl2 + edtitext);
 
         requestTargetLang tempTask = new requestTargetLang();
         tempTask.execute(url);
 
         mProgress.setVisibility(ProgressBar.VISIBLE);
     }
+//    public void getTranslation(){
+//        String Url = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyDEUxZWhL6W-LIzTwnzPSeuJjwnQqrsvwA&source=en&target="+ translateLang + "&q=";
+//
+//        requestTargetLang tempTask = new requestTargetLang();
+//        tempTask.execute(Url);
+//
+//        mProgress.setVisibility(ProgressBar.VISIBLE);
+//    }
 
     public static class keys{
-        //returns a key, or null if file is not found or can't be read
+        //returns a keys, or null if file is not found or can't be read
         protected static String getKeyFromRawResource(Context context, int rawResource){
 
             InputStream keyStream = context.getResources().openRawResource(rawResource);
