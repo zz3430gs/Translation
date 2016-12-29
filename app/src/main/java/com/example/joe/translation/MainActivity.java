@@ -28,6 +28,8 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Translate Activity";
+    //Create choices to choose the kind of language you want
+    //For now there are only 5 choices of language
     private final CharSequence[] choices = {"Japanese", "Hmong", "German", "Russian", "Spanish"};
     Button mbutton;
     EditText mEditText;
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                         if (from == 0){
                             Toast.makeText(MainActivity.this, "Select one choice only", Toast.LENGTH_SHORT).show();
                         }else if (from == 1){
+                            //Change to the targeted language that is choosen
                             targetlang = "ja";
                         }else if (from == 2){
                             targetlang = "hmn";
@@ -205,9 +208,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-    }
-    public void spaceToPlus(){
-        mEditText.getText().toString().replace(" ", "+");
     }
 
 }
