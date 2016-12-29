@@ -1,7 +1,9 @@
 package com.example.joe.translation;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +28,7 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Translate Activity";
+    private final CharSequence[] choices = {"Japanese", "Hmong", "German", "Russian", "Spanish"};
     Button mbutton;
     EditText mEditText;
     TextView mTextView;
@@ -32,64 +36,104 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar mProgress;
 
     String key;
+    String targetlang;
+    String lang;
+    int from;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Create the keys and get the keys data
+        //Create the key and get the key data
         key = keys.getKeyFromRawResource(this, R.raw.keys);
 
         //Create references to the individual widgets from the layout resources
         mProgress = (ProgressBar)findViewById(R.id.progress);
         mEditText = (EditText)findViewById(R.id.text_to_translate);
-//        mEditText2 = (EditText)findViewById(R.id.translation_lang);
-        mTargetLang = (TextView) findViewById(R.id.translation_lang);
+        mTargetLang = (Button) findViewById(R.id.translation_lang);
         mTextView = (TextView)findViewById(R.id.textTranslation);
 
-        //If there is nothing in the keys file, return error message
+        //If there is nothing in the key file, return error message
         if (key != null){
-            getJapaneseTranslation();
+            getTranslation();
         }else {
             Log.e(TAG, "Key can't be read from raw resource");
         }
+
+        mTargetLang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Search For... ")
+                        .setSingleChoiceItems(choices, -1, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (choices[which] == "Japanese"){
+                                    from = 1;
+                                    lang = "Japanese";
+                                }else if (choices[which] == "Hmong"){
+                                    from = 2;
+                                    lang = "Hmong";
+                                }else if (choices[which] == "German"){
+                                    from = 3;
+                                    lang = "German";
+                                }else if (choices[which] == "Russian"){
+                                    from = 4;
+                                    lang = "Russian";
+                                }else if (choices[which] == "Spanish"){
+                                    from = 5;
+                                    lang = "Spanish";
+                                }
+                            }
+                        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (from == 0){
+                            Toast.makeText(MainActivity.this, "Select one choice only", Toast.LENGTH_SHORT).show();
+                        }else if (from == 1){
+                            targetlang = "ja";
+                        }else if (from == 2){
+                            targetlang = "hmn";
+                        }else if (from == 3){
+                            targetlang = "de";
+                        }else if (from == 4){
+                            targetlang = "ru";
+                        }else if (from == 5){
+                            targetlang = "es";
+                        }
+                    }
+                }).setNegativeButton(android.R.string.cancel, null)
+                        .create()
+                        .show();
+            }
+        });
 
         mbutton = (Button)findViewById(R.id.search_button);
         mbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getJapaneseTranslation();
-
+                getTranslation();
             }
         });
 
     }
-    public void getJapaneseTranslation(){
+    public void getTranslation(){
 
         //For now we get the translation from japanese base on the url
         //TODO: For later maybe get the user to be able to chooce what they want to translate to
-        String baseTempURL = "https://translation.googleapis.com/language/translate/v2?key=";
-        String baseUrl2 = "&source=en&target=ja&q=";
-        String edtitext = mEditText.getText().toString();
-        String url = String.format(baseTempURL + key + baseUrl2 + edtitext);
+        String baseTempURL = "https://translation.googleapis.com/language/translate/v2?key="+ key + "&source=en&target="+ targetlang +"&q=";
+        String edtitext = mEditText.getText().toString().replace(" ", "+");
+        String url = String.format("%1s%2s", baseTempURL, edtitext);
 
         requestTargetLang tempTask = new requestTargetLang();
         tempTask.execute(url);
 
         mProgress.setVisibility(ProgressBar.VISIBLE);
     }
-//    public void getTranslation(){
-//        String Url = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyDEUxZWhL6W-LIzTwnzPSeuJjwnQqrsvwA&source=en&target="+ translateLang + "&q=";
-//
-//        requestTargetLang tempTask = new requestTargetLang();
-//        tempTask.execute(Url);
-//
-//        mProgress.setVisibility(ProgressBar.VISIBLE);
-//    }
 
     public static class keys{
-        //returns a keys, or null if file is not found or can't be read
+        //returns a key, or null if file is not found or can't be read
         protected static String getKeyFromRawResource(Context context, int rawResource){
 
             InputStream keyStream = context.getResources().openRawResource(rawResource);
@@ -152,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                     //If there is a translation then it will change the textview and show the translated word
                     String translateword = json.getJSONObject("data").getString("translations");
                     String textWord = mEditText.getText().toString();
-                    mTextView.setText(textWord + " translated to Japanese is" + translateword);
+                    mTextView.setText(textWord + " translated to "+ lang +" is" + translateword);
 
                 } catch (JSONException je) {
                     Log.e(TAG, "JSON parsing error", je);
@@ -161,6 +205,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+    public void spaceToPlus(){
+        mEditText.getText().toString().replace(" ", "+");
     }
 
 }
